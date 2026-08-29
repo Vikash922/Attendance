@@ -15,6 +15,7 @@ class LaborApplication : Application() {
         initializeFirebase()
         try {
             AttendanceReminderHelper.scheduleDailyReminders(this)
+            com.example.core.util.CloudSyncHelper.schedulePeriodicSync(this)
         } catch (e: Exception) {
             Log.e("LaborApplication", "Failed to schedule reminders: ${e.message}", e)
         }
