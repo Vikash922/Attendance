@@ -2,6 +2,8 @@ name: Android Release APK
 
 on:
   push:
+    branches:
+      - main
     tags:
       - 'v*'
   workflow_dispatch:
@@ -31,11 +33,18 @@ jobs:
           validate-wrappers: false
 
       - name: Build Release APK
-        run: gradle assembleRelease --no-daemon
+        run: gradle assembleRelease bundleRelease --no-daemon
 
       - name: Upload Release APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Laborbook-Release-APK
           path: app/build/outputs/apk/release/*.apk
+          retention-days: 90
+
+      - name: Upload Release AAB Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Laborbook-Release-AAB
+          path: app/build/outputs/bundle/release/*.aab
           retention-days: 90
