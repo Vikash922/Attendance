@@ -233,7 +233,7 @@ class LaborViewModel(application: Application) : AndroidViewModel(application) {
         val name = _newLaborName.value.trim()
         val phone = _newLaborPhone.value.trim()
         val wage = _newLaborWage.value.toDoubleOrNull() ?: 0.0
-        if (name.isBlank() || phone.isBlank() || wage <= 0.0) return false
+        if (name.isBlank() || name.length > 50 || phone.isBlank() || phone.length > 20 || wage <= 0.0 || wage > 1000000.0) return false
 
         repository.addWorker(name, phone, wage)
 
@@ -349,7 +349,7 @@ class LaborViewModel(application: Application) : AndroidViewModel(application) {
         dateDisplay: String,
         fullDate: String
     ) {
-        if (amount <= 0.0) {
+        if (amount <= 0.0 || amount > 10000000.0 || notes.length > 500) {
             closeTransactionSheet()
             return
         }

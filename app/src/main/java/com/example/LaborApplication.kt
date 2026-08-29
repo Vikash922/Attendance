@@ -5,6 +5,9 @@ import android.util.Log
 import com.example.core.util.AttendanceReminderHelper
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
+import com.google.firebase.appcheck.FirebaseAppCheck
+import com.google.firebase.appcheck.playintegrity.PlayIntegrityAppCheckProviderFactory
+
 
 class LaborApplication : Application() {
     override fun onCreate() {
@@ -37,8 +40,32 @@ class LaborApplication : Application() {
                     .build()
                 FirebaseApp.initializeApp(this, options)
                 Log.i("LaborApplication", "FirebaseApp successfully initialized with FirebaseOptions.")
+            if (FirebaseApp.getApps(this).isNotEmpty()) {
+                try {
+                    val firebaseAppCheck = FirebaseAppCheck.getInstance()
+                    firebaseAppCheck.installAppCheckProviderFactory(
+                        PlayIntegrityAppCheckProviderFactory.getInstance()
+                    )
+                    Log.i("LaborApplication", "Firebase AppCheck successfully initialized with PlayIntegrity.")
+                } catch (e: Exception) {
+                    Log.e("LaborApplication", "Failed to initialize Firebase AppCheck: ${e.message}")
+                }
+            }
+
             } else {
                 Log.i("LaborApplication", "FirebaseApp already initialized.")
+            if (FirebaseApp.getApps(this).isNotEmpty()) {
+                try {
+                    val firebaseAppCheck = FirebaseAppCheck.getInstance()
+                    firebaseAppCheck.installAppCheckProviderFactory(
+                        PlayIntegrityAppCheckProviderFactory.getInstance()
+                    )
+                    Log.i("LaborApplication", "Firebase AppCheck successfully initialized with PlayIntegrity.")
+                } catch (e: Exception) {
+                    Log.e("LaborApplication", "Failed to initialize Firebase AppCheck: ${e.message}")
+                }
+            }
+
             }
         } catch (e: Exception) {
             Log.e("LaborApplication", "Failed to initialize FirebaseApp: ${e.message}", e)
