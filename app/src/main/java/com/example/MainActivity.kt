@@ -50,6 +50,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.CheckCircle
 import com.example.presentation.components.LaborbookBottomNav
 import com.example.presentation.screens.AddLaborScreen
 import com.example.presentation.screens.BatchPdfHubScreen
@@ -207,28 +208,36 @@ fun LaborbookApp(
         containerColor = MaterialTheme.colorScheme.background,
         snackbarHost = {
             SnackbarHost(snackbarHostState) { data ->
-                Row(
+                Box(
                     modifier = Modifier
-                        .padding(bottom = 24.dp, start = 16.dp, end = 16.dp)
-                        .fillMaxWidth()
-                        .shadow(12.dp, RoundedCornerShape(20.dp), ambientColor = com.example.presentation.theme.LaborBlue, spotColor = com.example.presentation.theme.LaborBlue)
-                        .background(Color(0xFF1E293B), RoundedCornerShape(20.dp))
-                        .padding(horizontal = 18.dp, vertical = 14.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(bottom = if (isRootTabScreen) 90.dp else 32.dp, start = 24.dp, end = 24.dp)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Info,
-                        contentDescription = "Notification",
-                        tint = com.example.presentation.theme.LaborWarning,
-                        modifier = Modifier.size(22.dp)
-                    )
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Text(
-                        text = data.visuals.message,
-                        color = Color.White,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
+                    Row(
+                        modifier = Modifier
+                            .shadow(4.dp, RoundedCornerShape(30.dp))
+                            .background(Color(0xFF222222), RoundedCornerShape(30.dp))
+                            .padding(horizontal = 20.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        val msg = data.visuals.message
+                        val isSuccess = msg.contains("success", ignoreCase = true) || msg.contains("saved", ignoreCase = true) || msg.contains("added", ignoreCase = true)
+                        
+                        Icon(
+                            imageVector = if (isSuccess) Icons.Rounded.CheckCircle else Icons.Rounded.Info,
+                            contentDescription = "Notification",
+                            tint = if (isSuccess) Color(0xFF4ADE80) else Color(0xFF60A5FA),
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = msg,
+                            color = Color.White,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
             }
         },

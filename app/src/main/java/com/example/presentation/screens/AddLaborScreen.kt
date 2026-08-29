@@ -119,7 +119,7 @@ fun AddLaborScreen(
         hasContactPermission = isGranted
         if (isGranted) {
             viewModel.refreshContacts(context)
-            viewModel.showMessage("Contacts loaded successfully")
+            // removed
         } else {
             viewModel.showMessage("Contact permission not granted. You can still add labors manually.")
         }
@@ -226,7 +226,7 @@ fun AddLaborScreen(
                             onClick = {
                                 if (hasContactPermission) {
                                     viewModel.refreshContacts(context)
-                                    viewModel.showMessage("Contacts refreshed")
+                                    // removed
                                 } else {
                                     permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
                                 }
@@ -730,7 +730,7 @@ fun AddLaborScreen(
                     onClick = {
                         if (wage > 0.0) {
                             viewModel.addLaborFromContact(contact.copy(), wage)
-                            viewModel.showMessage("Added ${contact.name} to labors list!")
+                            // removed
                             selectedContactForAdd = null
                         }
                     },
