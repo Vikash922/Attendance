@@ -268,7 +268,7 @@ fun CashBookScreen(
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00875A))
                             ) {
                                 Text(
-                                    text = "+ ${AppStrings.get("cash_in", lang).uppercase()}",
+                                    text = AppStrings.get("cash_in", lang).uppercase(),
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
@@ -286,7 +286,7 @@ fun CashBookScreen(
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935))
                             ) {
                                 Text(
-                                    text = "- ${AppStrings.get("cash_out", lang).uppercase()}",
+                                    text = AppStrings.get("cash_out", lang).uppercase(),
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color.White
@@ -470,48 +470,54 @@ fun CashBookScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 12.dp)
+                                // No horizontal padding here so dividers go full width!
                         ) {
-                                // Table Header Row (Clean List Look)
-                                Row(
+                            // Table Header Row
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color(0xFFF9FAFB))
+                                    .height(IntrinsicSize.Min),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = AppStrings.get("date", lang),
+                                    fontSize = 13.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black,
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(IntrinsicSize.Min),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        text = AppStrings.get("date", lang),
-                                        fontSize = 13.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF111827),
-                                        modifier = Modifier
-                                            .weight(0.20f)
-                                            .padding(vertical = 10.dp),
-                                        textAlign = TextAlign.Start
-                                    )
-                                    Text(
-                                        text = AppStrings.get("notes", lang),
-                                        fontSize = 13.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF111827),
-                                        modifier = Modifier
-                                            .weight(0.44f)
-                                            .padding(horizontal = 12.dp, vertical = 10.dp),
-                                        textAlign = TextAlign.Start
-                                    )
-                                    Text(
-                                        text = "₹ " + AppStrings.get("amount", lang),
-                                        fontSize = 13.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF111827),
-                                        modifier = Modifier
-                                            .weight(0.36f)
-                                            .padding(horizontal = 12.dp, vertical = 10.dp),
-                                        textAlign = TextAlign.Start
-                                    )
-                                }
+                                        .weight(0.20f)
+                                        .padding(start = 12.dp, top = 8.dp, bottom = 8.dp),
+                                    textAlign = TextAlign.Start
+                                )
+                                // Divider 1
+                                androidx.compose.foundation.layout.Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(Color.Black))
+                                
+                                Text(
+                                    text = AppStrings.get("notes", lang),
+                                    fontSize = 13.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black,
+                                    modifier = Modifier
+                                        .weight(0.44f)
+                                        .padding(horizontal = 8.dp, vertical = 8.dp),
+                                    textAlign = TextAlign.Start
+                                )
+                                // Divider 2
+                                androidx.compose.foundation.layout.Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(Color.Black))
 
-                                HorizontalDivider(color = Color(0xFFE5E7EB), thickness = 1.dp)
+                                Text(
+                                    text = "₹ " + AppStrings.get("amount", lang),
+                                    fontSize = 13.5.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black,
+                                    modifier = Modifier
+                                        .weight(0.36f)
+                                        .padding(end = 12.dp, start = 8.dp, top = 8.dp, bottom = 8.dp),
+                                    textAlign = TextAlign.Start
+                                )
+                            }
+                            HorizontalDivider(color = Color.Black, thickness = 1.dp)
                         }
                     }
                     
@@ -519,93 +525,98 @@ fun CashBookScreen(
                         items = displayTransactions,
                         key = { _, tx -> tx.id }
                     ) { index, tx ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 12.dp)
-                                .clickable { viewModel.openTransactionDetail(tx) }
-                                            .testTag("tx_row_${tx.id}")
-                                            .height(IntrinsicSize.Min),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        val (dayNum, dayName) = parseDayAndWeek(tx.fullDate, tx.dateDisplay, tx.timestamp)
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { viewModel.openTransactionDetail(tx) }
+                                    .testTag("tx_row_${tx.id}")
+                                    .height(IntrinsicSize.Min),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val (dayNum, dayName) = parseDayAndWeek(tx.fullDate, tx.dateDisplay, tx.timestamp)
 
-                                        // Date Column (Stacked Day Number & Day Name, Left aligned)
-                                        Column(
-                                            modifier = Modifier
-                                                .weight(0.20f)
-                                                .padding(vertical = 8.dp),
-                                            horizontalAlignment = Alignment.Start,
-                                            verticalArrangement = Arrangement.Center
-                                        ) {
-                                            Text(
-                                                text = dayNum,
-                                                fontSize = 14.5.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = Color(0xFF111827)
-                                            )
-                                            Text(
-                                                text = dayName,
-                                                fontSize = 11.5.sp,
-                                                fontWeight = FontWeight.Normal,
-                                                color = Color(0xFF6B7280)
-                                            )
-                                        }
-
-                                        // Notes & Payment Method Column
-                                        Column(
-                                            modifier = Modifier
-                                                .weight(0.44f)
-                                                .padding(horizontal = 12.dp, vertical = 8.dp),
-                                            verticalArrangement = Arrangement.Center
-                                        ) {
-                                            Text(
-                                                text = tx.notes.ifBlank { "-" },
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.Normal,
-                                                color = Color(0xFF111827),
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                            Text(
-                                                text = tx.paymentMethod.name.uppercase(),
-                                                fontSize = 10.5.sp,
-                                                fontWeight = FontWeight.Normal,
-                                                color = Color(0xFF6B7280)
-                                            )
-                                        }
-
-                                        // Amount Column: Left aligned Amount with right aligned chevron
-                                        Row(
-                                            modifier = Modifier
-                                                .weight(0.36f)
-                                                .padding(horizontal = 12.dp, vertical = 8.dp),
-                                            horizontalArrangement = Arrangement.SpaceBetween,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            val formattedAmount = if (tx.amount % 1.0 == 0.0) {
-                                                "${tx.amount.toInt()}"
-                                            } else {
-                                                "${tx.amount}"
-                                            }
-                                            Text(
-                                                text = "₹$formattedAmount",
-                                                fontSize = 14.5.sp,
-                                                fontWeight = FontWeight.Bold,
-                                                color = if (tx.type == TransactionType.CASH_IN) Color(0xFF16A34A) else Color(0xFFDC2626)
-                                            )
-                                            Icon(
-                                                imageVector = Icons.Default.KeyboardArrowRight,
-                                                contentDescription = null,
-                                                tint = Color(0xFFD1D5DB),
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                        }
-                                    }
-                                    if (index < displayTransactions.size - 1) {
-                                        HorizontalDivider(color = Color(0xFFE5E7EB), thickness = 1.dp)
-                                    }
+                                // Date Column
+                                Column(
+                                    modifier = Modifier
+                                        .weight(0.20f)
+                                        .padding(start = 12.dp, top = 6.dp, bottom = 6.dp),
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Text(
+                                        text = dayNum,
+                                        fontSize = 14.5.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.Black
+                                    )
+                                    Text(
+                                        text = dayName,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        color = Color(0xFF6B7280)
+                                    )
                                 }
+
+                                // Divider 1
+                                androidx.compose.foundation.layout.Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(Color.Black))
+
+                                // Notes Column
+                                Column(
+                                    modifier = Modifier
+                                        .weight(0.44f)
+                                        .padding(horizontal = 8.dp, vertical = 6.dp),
+                                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Text(
+                                        text = tx.notes.ifBlank { "-" },
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = Color.Black,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Text(
+                                        text = tx.paymentMethod.name.uppercase(),
+                                        fontSize = 10.5.sp,
+                                        fontWeight = FontWeight.Normal,
+                                        color = Color(0xFF6B7280)
+                                    )
+                                }
+
+                                // Divider 2
+                                androidx.compose.foundation.layout.Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(Color.Black))
+
+                                // Amount Column
+                                Row(
+                                    modifier = Modifier
+                                        .weight(0.36f)
+                                        .padding(end = 12.dp, start = 8.dp, top = 6.dp, bottom = 6.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    val formattedAmount = if (tx.amount % 1.0 == 0.0) {
+                                        "${tx.amount.toInt()}"
+                                    } else {
+                                        "${tx.amount}"
+                                    }
+                                    Text(
+                                        text = "₹$formattedAmount",
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = if (tx.type == TransactionType.CASH_IN) Color(0xFF16A34A) else Color(0xFFDC2626)
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Default.KeyboardArrowRight,
+                                        contentDescription = null,
+                                        tint = Color(0xFFD1D5DB),
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                            HorizontalDivider(color = Color.Black, thickness = 1.dp)
+                        }
+                    }
                     item { Spacer(modifier = Modifier.height(16.dp)) }
                 }
             }

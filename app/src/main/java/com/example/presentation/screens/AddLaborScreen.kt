@@ -597,23 +597,13 @@ fun AddLaborScreen(
                     items = contacts,
                     key = { _, contact -> contact.id }
                 ) { index, contact ->
-                    val isFirst = index == 0
-                    val isLast = index == contacts.size - 1
-                    val cardShape = when {
-                        isFirst && isLast -> RoundedCornerShape(16.dp)
-                        isFirst -> RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                        isLast -> RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
-                        else -> androidx.compose.ui.graphics.RectangleShape
-                    }
-
                     Surface(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable { selectedContactForAdd = contact }
                             .testTag("contact_item_${contact.id}"),
-                        shape = cardShape,
-                        color = Color.White,
-                        shadowElevation = if (isFirst || isLast) 1.dp else 0.dp
+                        shape = androidx.compose.ui.graphics.RectangleShape,
+                        color = Color.White
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Row(
@@ -682,7 +672,7 @@ fun AddLaborScreen(
                                 }
                             }
 
-                            if (!isLast) {
+                            if (index < contacts.size - 1) {
                                 HorizontalDivider(
                                     color = Color(0xFFE5E7EB),
                                     thickness = 0.8.dp,

@@ -583,7 +583,7 @@ fun LaborDetailScreen(
                                     }
 
                                     Column(
-                                        modifier = Modifier.weight(1.35f),
+                                        modifier = Modifier.weight(1.15f),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
@@ -711,7 +711,7 @@ fun LaborDetailScreen(
                         // Col 2: Attendance
                         Box(
                             modifier = Modifier
-                                .weight(1.35f)
+                                .weight(1.15f)
                                 .fillMaxHeight()
                                 .padding(start = 12.dp),
                             contentAlignment = Alignment.CenterStart
@@ -729,7 +729,7 @@ fun LaborDetailScreen(
                         // Col 3: ₹ / Notes
                         Box(
                             modifier = Modifier
-                                .weight(0.95f)
+                                .weight(1.15f)
                                 .fillMaxHeight()
                                 .padding(start = 12.dp),
                             contentAlignment = Alignment.CenterStart
@@ -1819,7 +1819,7 @@ fun LaborAttendanceDayRow(
             // Col 2: Attendance
             Row(
                 modifier = Modifier
-                    .weight(1.35f)
+                    .weight(1.15f)
                     .fillMaxHeight()
                     .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -1925,22 +1925,22 @@ fun LaborAttendanceDayRow(
                             color = if (isOtActive) Color.White else Color(0xFF7E3B7D)
                         )
                     }
-                }
-
-                // 3 dots More Menu (Mark Attendance Sheet)
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .clickable { onOpenAttendanceSheet(dayInfo.day, status) },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        contentDescription = "Mark Attendance",
-                        tint = Color(0xFF475569),
-                        modifier = Modifier.size(20.dp)
-                    )
+                    
+                    // 3 dots More Menu (Mark Attendance Sheet) moved next to OT
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .clickable { onOpenAttendanceSheet(dayInfo.day, status) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "Mark Attendance",
+                            tint = Color(0xFF475569),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
                 }
             }
 
@@ -1950,7 +1950,7 @@ fun LaborAttendanceDayRow(
             // Col 3: ₹ / Notes
             Row(
                 modifier = Modifier
-                    .weight(0.95f)
+                    .weight(1.15f)
                     .fillMaxHeight()
                     .clickable { onAdvanceClicked(dayInfo.day) }
                     .padding(start = 12.dp, end = 8.dp),

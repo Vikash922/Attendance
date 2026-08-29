@@ -237,45 +237,45 @@ fun MonthYearSelectionBottomSheet(
                 )
             },
             text = {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(300.dp)
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(LaborCalendarHelper.monthsFull.indices.toList()) { index ->
-                        val mNum = index + 1
-                        val mName = LaborCalendarHelper.monthsFull[index]
-                        val isSelected = mNum == selectedMonthNum
-
+                    val months = LaborCalendarHelper.monthsFull
+                    for (row in 0 until 4) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(8.dp))
-                                .clickable {
-                                    selectedMonthNum = mNum
-                                    showMonthPicker = false
-                                }
-                                .padding(vertical = 10.dp, horizontal = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            RadioButton(
-                                selected = isSelected,
-                                onClick = {
-                                    selectedMonthNum = mNum
-                                    showMonthPicker = false
-                                },
-                                colors = RadioButtonDefaults.colors(
-                                    selectedColor = Color(0xFF1D61D2),
-                                    unselectedColor = Color(0xFF9CA3AF)
-                                )
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text(
-                                text = mName,
-                                fontSize = 15.sp,
-                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                color = if (isSelected) Color(0xFF1D61D2) else Color(0xFF1F2937)
-                            )
+                            for (col in 0 until 3) {
+                                val index = row * 3 + col
+                                val mNum = index + 1
+                                val mName = months[index].take(3)
+                                val isSelected = mNum == selectedMonthNum
+                                
+                                Surface(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(48.dp)
+                                        .clickable { 
+                                            selectedMonthNum = mNum
+                                            showMonthPicker = false
+                                        },
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = if (isSelected) Color(0xFF1D61D2) else Color(0xFFF3F4F6)
+                                ) {
+                                    androidx.compose.foundation.layout.Box(
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = mName,
+                                            fontSize = 15.sp,
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                            color = if (isSelected) Color.White else Color(0xFF374151)
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
