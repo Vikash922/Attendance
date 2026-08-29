@@ -279,6 +279,31 @@ fun LaborDetailScreen(
             }
         }
     ) { innerPadding ->
+            val currentWorkerId = worker.id
+            val onStatusSelectedMemo = androidx.compose.runtime.remember(currentWorkerId, selectedMonth) {
+                { day: Int, newStatus: com.example.domain.model.AttendanceStatus ->
+                    viewModel.setAttendance(currentWorkerId, day, newStatus, selectedMonth)
+                }
+            }
+            val onOvertimeClickedMemo = androidx.compose.runtime.remember(currentWorkerId) {
+                { day: Int -> selectedDayForOvertimeDialog = day }
+            }
+            val onAdvanceClickedMemo = androidx.compose.runtime.remember(currentWorkerId, currentYear, currentMonthNum) {
+                { day: Int ->
+                    val dateKey = com.example.core.util.LaborCalendarHelper.getDateKey(currentYear, currentMonthNum, day)
+                    val dayRecord = worker.attendance[dateKey]
+                    if ((dayRecord?.advanceAmount ?: 0.0) > 0.0) {
+                        selectedDayForAdvanceDetailDialog = day
+                    } else {
+                        selectedDayForAdvanceEditDialog = day
+                    }
+                }
+            }
+            val onOpenAttendanceSheetMemo = androidx.compose.runtime.remember(currentWorkerId) {
+                { day: Int, initialStatus: com.example.domain.model.AttendanceStatus? ->
+                    selectedDayForAttendanceSheet = Pair(day, initialStatus)
+                }
+            }
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -721,31 +746,7 @@ fun LaborDetailScreen(
             }
 
             // Table Row items for all days of the month
-            val currentWorkerId = worker.id
-            val onStatusSelectedMemo = androidx.compose.runtime.remember(currentWorkerId, selectedMonth) {
-                { day: Int, newStatus: com.example.domain.model.AttendanceStatus ->
-                    viewModel.setAttendance(currentWorkerId, day, newStatus, selectedMonth)
-                }
-            }
-            val onOvertimeClickedMemo = androidx.compose.runtime.remember(currentWorkerId) {
-                { day: Int -> selectedDayForOvertimeDialog = day }
-            }
-            val onAdvanceClickedMemo = androidx.compose.runtime.remember(currentWorkerId, currentYear, currentMonthNum) {
-                { day: Int ->
-                    val dateKey = com.example.core.util.LaborCalendarHelper.getDateKey(currentYear, currentMonthNum, day)
-                    val dayRecord = worker.attendance[dateKey]
-                    if ((dayRecord?.advanceAmount ?: 0.0) > 0.0) {
-                        selectedDayForAdvanceDetailDialog = day
-                    } else {
-                        selectedDayForAdvanceEditDialog = day
-                    }
-                }
-            }
-            val onOpenAttendanceSheetMemo = androidx.compose.runtime.remember(currentWorkerId) {
-                { day: Int, initialStatus: com.example.domain.model.AttendanceStatus? ->
-                    selectedDayForAttendanceSheet = Pair(day, initialStatus)
-                }
-            }
+
 
             itemsIndexed(
                 items = monthDaysInfo,
