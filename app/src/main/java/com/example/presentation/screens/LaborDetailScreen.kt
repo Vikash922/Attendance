@@ -721,6 +721,32 @@ fun LaborDetailScreen(
             }
 
             // Table Row items for all days of the month
+            val currentWorkerId = worker.id
+            val onStatusSelectedMemo = androidx.compose.runtime.remember(currentWorkerId, selectedMonth) {
+                { day: Int, newStatus: com.example.domain.model.AttendanceStatus ->
+                    viewModel.setAttendance(currentWorkerId, day, newStatus, selectedMonth)
+                }
+            }
+            val onOvertimeClickedMemo = androidx.compose.runtime.remember(currentWorkerId) {
+                { day: Int -> selectedDayForOvertimeDialog = day }
+            }
+            val onAdvanceClickedMemo = androidx.compose.runtime.remember(currentWorkerId, currentYear, currentMonthNum) {
+                { day: Int ->
+                    val dateKey = com.example.core.util.LaborCalendarHelper.getDateKey(currentYear, currentMonthNum, day)
+                    val dayRecord = worker.attendance[dateKey]
+                    if ((dayRecord?.advanceAmount ?: 0.0) > 0.0) {
+                        selectedDayForAdvanceDetailDialog = day
+                    } else {
+                        selectedDayForAdvanceEditDialog = day
+                    }
+                }
+            }
+            val onOpenAttendanceSheetMemo = androidx.compose.runtime.remember(currentWorkerId) {
+                { day: Int, initialStatus: com.example.domain.model.AttendanceStatus? ->
+                    selectedDayForAttendanceSheet = Pair(day, initialStatus)
+                }
+            }
+
             itemsIndexed(
                 items = monthDaysInfo,
                 key = { _, it -> it.dateKey }
@@ -730,28 +756,14 @@ fun LaborDetailScreen(
                 LaborAttendanceDayRow(
                     dayInfo = dayInfo,
                     isLast = index == monthDaysInfo.lastIndex,
-                    status = dayRecord?.status ?: AttendanceStatus.UNMARKED,
+                    status = dayRecord?.status ?: com.example.domain.model.AttendanceStatus.UNMARKED,
                     advance = dayRecord?.advanceAmount ?: 0.0,
                     note = dayRecord?.note ?: "",
                     otHours = dayRecord?.overtimeHours ?: 0.0,
-                    onStatusSelected = { day, newStatus ->
-                        viewModel.setAttendance(worker.id, day, newStatus, selectedMonth)
-                    },
-                    onOvertimeClicked = { day ->
-                        selectedDayForOvertimeDialog = day
-                    },
-                    onAdvanceClicked = { day ->
-                        val dateKey = LaborCalendarHelper.getDateKey(currentYear, currentMonthNum, day)
-                        val dayRecord = worker.attendance[dateKey]
-                        if ((dayRecord?.advanceAmount ?: 0.0) > 0.0) {
-                            selectedDayForAdvanceDetailDialog = day
-                        } else {
-                            selectedDayForAdvanceEditDialog = day
-                        }
-                    },
-                    onOpenAttendanceSheet = { day, initialStatus ->
-                        selectedDayForAttendanceSheet = Pair(day, initialStatus)
-                    }
+                    onStatusSelected = onStatusSelectedMemo,
+                    onOvertimeClicked = onOvertimeClickedMemo,
+                    onAdvanceClicked = onAdvanceClickedMemo,
+                    onOpenAttendanceSheet = onOpenAttendanceSheetMemo
                 )
             }
 

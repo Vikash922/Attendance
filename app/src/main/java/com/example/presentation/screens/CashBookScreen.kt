@@ -511,13 +511,18 @@ fun CashBookScreen(
                                 }
 
                                 HorizontalDivider(color = Color(0xFFE5E7EB), thickness = 1.dp)
-
-                                // Table Items with Vertical Grid Dividers (Excel look)
-                                displayTransactions.forEachIndexed { index, tx ->
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .clickable { viewModel.openTransactionDetail(tx) }
+                        }
+                    }
+                    
+                    itemsIndexed(
+                        items = displayTransactions,
+                        key = { _, tx -> tx.id }
+                    ) { index, tx ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp)
+                                .clickable { viewModel.openTransactionDetail(tx) }
                                             .testTag("tx_row_${tx.id}")
                                             .height(IntrinsicSize.Min),
                                         verticalAlignment = Alignment.CenterVertically
@@ -600,9 +605,6 @@ fun CashBookScreen(
                                         HorizontalDivider(color = Color(0xFFE5E7EB), thickness = 1.dp)
                                     }
                                 }
-                            }
-                        }
-
                     item { Spacer(modifier = Modifier.height(16.dp)) }
                 }
             }
