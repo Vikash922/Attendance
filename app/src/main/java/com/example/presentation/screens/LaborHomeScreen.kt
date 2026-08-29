@@ -209,6 +209,8 @@ fun LaborHomeScreen(
                         .padding(horizontal = 14.dp, vertical = 2.dp)
                 )
 
+                        }
+
             // Labor Worker Cards List
             if (workers.isEmpty()) {
                 item {

@@ -88,7 +88,6 @@ class LaborRepository(
     private val _isCloudSyncing = MutableStateFlow(false)
     val isCloudSyncing: StateFlow<Boolean> = _isCloudSyncing.asStateFlow()
 
-    private val _lastDeletedWorker = MutableStateFlow<LaborWorker?>(null)
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
     private var autoSyncJob: Job? = null
@@ -723,7 +722,6 @@ class LaborRepository(
     fun deleteWorker(workerId: String) {
         autoSyncJob?.cancel() // Stop any pending debounced auto-sync from previous taps immediately
         val workerToDelete = _workers.value.find { it.id == workerId }
-        _lastDeletedWorker.value = workerToDelete
 
         _workers.value = _workers.value.filter { it.id != workerId }
         // Save working state locally ONLY (never auto-backup or overwrite the single master backup on deletion)
@@ -736,13 +734,7 @@ class LaborRepository(
     }
 
 
-    fun clearUndoCache() {
-        if (_lastDeletedWorker.value != null) {
-            _lastDeletedWorker.value = null
-            // Once the undo window expires, push the deletion to the cloud
-            persistLocalData(syncToCloud = true)
-        }
-    }
+    fun clearUndoCache() { }
 
     fun setAttendanceStatus(workerId: String, monthStr: String, dayNumber: Int, status: AttendanceStatus) {
         val (year, month) = LaborCalendarHelper.parseYearMonth(monthStr)
@@ -954,7 +946,6 @@ class LaborRepository(
     }
 
     fun restoreData(backupData: BackupData) {
-        _lastDeletedWorker.value = null
         _workers.value = backupData.workers
         _transactions.value = backupData.transactions
         if (backupData.userProfile != null) {
