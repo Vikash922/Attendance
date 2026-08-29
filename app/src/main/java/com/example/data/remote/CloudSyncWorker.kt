@@ -20,7 +20,7 @@ class CloudSyncWorker(
             
             // This will trigger the sync logic built into the repository
             // including updating the root metadata in Firebase.
-            repository.triggerCloudSyncBackground()
+            repository.syncMetadataToCloud()
             
             Log.d("CloudSyncWorker", "Guaranteed background sync completed successfully.")
             Result.success()

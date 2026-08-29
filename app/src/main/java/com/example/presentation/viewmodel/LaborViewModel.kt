@@ -47,7 +47,8 @@ class LaborViewModel(application: Application) : AndroidViewModel(application) {
     val selectedMonth: StateFlow<String> = repository.selectedMonth
     val lastBackupStatus: StateFlow<String> = repository.lastBackupStatus
     val isCloudSyncing: StateFlow<Boolean> = repository.isCloudSyncing
-    repository.updateSelectedMonth(month)
+    fun updateSelectedMonth(month: String) {
+        repository.updateSelectedMonth(month)
     }
 
     fun refreshContacts(context: android.content.Context) {
