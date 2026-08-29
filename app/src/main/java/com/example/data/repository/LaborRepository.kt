@@ -89,7 +89,6 @@ class LaborRepository(
     val isCloudSyncing: StateFlow<Boolean> = _isCloudSyncing.asStateFlow()
 
     private val _lastDeletedWorker = MutableStateFlow<LaborWorker?>(null)
-    val lastDeletedWorker: StateFlow<LaborWorker?> = _lastDeletedWorker.asStateFlow()
 
     private val repositoryScope = CoroutineScope(Dispatchers.IO)
     private var autoSyncJob: Job? = null
@@ -736,16 +735,6 @@ class LaborRepository(
         }
     }
 
-    fun undoDeleteWorker(): Boolean {
-        val worker = _lastDeletedWorker.value ?: return false
-        val alreadyPresent = _workers.value.any { it.id == worker.id }
-        if (!alreadyPresent) {
-            _workers.value = _workers.value + worker
-            persistLocalData()
-        }
-        _lastDeletedWorker.value = null
-        return true
-    }
 
     fun clearUndoCache() {
         if (_lastDeletedWorker.value != null) {

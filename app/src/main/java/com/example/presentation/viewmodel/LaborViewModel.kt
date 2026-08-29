@@ -47,10 +47,7 @@ class LaborViewModel(application: Application) : AndroidViewModel(application) {
     val selectedMonth: StateFlow<String> = repository.selectedMonth
     val lastBackupStatus: StateFlow<String> = repository.lastBackupStatus
     val isCloudSyncing: StateFlow<Boolean> = repository.isCloudSyncing
-    val lastDeletedWorker: StateFlow<LaborWorker?> = repository.lastDeletedWorker
-
-    fun updateSelectedMonth(month: String) {
-        repository.updateSelectedMonth(month)
+    repository.updateSelectedMonth(month)
     }
 
     fun refreshContacts(context: android.content.Context) {
@@ -282,17 +279,11 @@ class LaborViewModel(application: Application) : AndroidViewModel(application) {
         val name = worker?.name ?: "Worker"
         repository.deleteWorker(workerId)
 
-        _syncMessage.value = "$name deleted. Tap to UNDO."
+        _syncMessage.value = "$name deleted."
 
         navigateTo(Screen.LaborHome)
     }
 
-    fun undoDeleteWorker() {
-        val restored = repository.undoDeleteWorker()
-        if (restored) {
-            _syncMessage.value = "Worker restored successfully!"
-        }
-    }
 
     fun restoreFromSafetyBackup(onComplete: ((Boolean, String) -> Unit)? = null) {
         viewModelScope.launch {
