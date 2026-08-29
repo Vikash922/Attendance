@@ -49,8 +49,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Info
 import com.example.presentation.components.LaborbookBottomNav
 import com.example.presentation.screens.AddLaborScreen
 import com.example.presentation.screens.BatchPdfHubScreen
@@ -225,7 +225,7 @@ fun LaborbookApp(
                         val isSuccess = msg.contains("success", ignoreCase = true) || msg.contains("saved", ignoreCase = true) || msg.contains("added", ignoreCase = true)
                         
                         Icon(
-                            imageVector = if (isSuccess) Icons.Rounded.CheckCircle else Icons.Rounded.Info,
+                            imageVector = if (isSuccess) Icons.Default.Check else Icons.Default.Info,
                             contentDescription = "Notification",
                             tint = if (isSuccess) Color(0xFF4ADE80) else Color(0xFF60A5FA),
                             modifier = Modifier.size(20.dp)

@@ -54,6 +54,7 @@ import com.example.core.util.AppUpdater
 import com.example.core.util.UpdateInfo
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
@@ -72,7 +73,7 @@ fun LaborHomeScreen(
     val workerSearchQuery by viewModel.workerSearchQuery.collectAsStateWithLifecycle()
     val lang = userProfile.language
 
-    var updateInfo by androidx.compose.runtime.remember { mutableStateOf<UpdateInfo?>(null) }
+    var updateInfo by remember { mutableStateOf<UpdateInfo?>(null) }
     
     LaunchedEffect(Unit) {
         val info = AppUpdater.checkForUpdate()

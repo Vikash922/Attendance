@@ -105,7 +105,7 @@ object AppUpdater {
         try {
             val uri = FileProvider.getUriForFile(
                 context,
-                "${BuildConfig.APPLICATION_ID}.fileprovider",
+                "${context.packageName}.fileprovider",
                 apkFile
             )
             val intent = Intent(Intent.ACTION_VIEW).apply {
