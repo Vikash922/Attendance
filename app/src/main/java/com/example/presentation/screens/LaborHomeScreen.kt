@@ -50,6 +50,13 @@ import com.example.presentation.theme.LaborTextSecondary
 import com.example.presentation.viewmodel.LaborViewModel
 import com.example.presentation.viewmodel.Screen
 import com.example.core.util.AppStrings
+import com.example.core.util.AppUpdater
+import com.example.core.util.UpdateInfo
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 
 @Composable
 fun LaborHomeScreen(
@@ -65,6 +72,47 @@ fun LaborHomeScreen(
     val lastDeletedWorker by viewModel.lastDeletedWorker.collectAsStateWithLifecycle()
     val workerSearchQuery by viewModel.workerSearchQuery.collectAsStateWithLifecycle()
     val lang = userProfile.language
+
+    var updateInfo by androidx.compose.runtime.remember { mutableStateOf<UpdateInfo?>(null) }
+    
+    LaunchedEffect(Unit) {
+        val info = AppUpdater.checkForUpdate()
+        if (info != null && info.hasUpdate) {
+            updateInfo = info
+        }
+    }
+
+    if (updateInfo != null) {
+        AlertDialog(
+            onDismissRequest = { updateInfo = null },
+            title = { Text("Update Available", fontWeight = FontWeight.Bold, color = Color(0xFF0F172A)) },
+            text = {
+                Column {
+                    Text("Version ${updateInfo!!.latestVersionName} is available.", fontSize = 14.sp, color = Color(0xFF334155))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(updateInfo!!.releaseNotes, fontSize = 13.sp, color = Color(0xFF64748B))
+                }
+            },
+            confirmButton = {
+                androidx.compose.material3.Button(
+                    onClick = {
+                        AppUpdater.downloadAndInstallUpdate(context, updateInfo!!.apkUrl, updateInfo!!.latestVersionName)
+                        updateInfo = null
+                    },
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = com.example.presentation.theme.LaborBlue)
+                ) {
+                    Text("Update Now", color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { updateInfo = null }) {
+                    Text("Later", color = Color(0xFF64748B))
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp)
+        )
+    }
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
