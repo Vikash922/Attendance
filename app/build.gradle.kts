@@ -31,27 +31,16 @@ android {
 
   signingConfigs {
     create("release") {
-      val keystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
-      val file = file(keystorePath)
-      
-      if (file.exists()) {
-        storeFile = file
-        storePassword = System.getenv("STORE_PASSWORD")
-        keyAlias = "upload"
-        keyPassword = System.getenv("KEY_PASSWORD")
-      } else {
-        // Fallback to debug keystore for AI Studio automated release builds if no key provided
-        storeFile = file("${rootDir}/debug.keystore")
-        storePassword = "android"
-        keyAlias = "androiddebugkey"
-        keyPassword = "android"
-      }
+      storeFile = file("release.keystore")
+      storePassword = "attendance123"
+      keyAlias = "attendance_alias"
+      keyPassword = "attendance123"
     }
     create("debugConfig") {
-      storeFile = file("${rootDir}/debug.keystore")
-      storePassword = "android"
-      keyAlias = "androiddebugkey"
-      keyPassword = "android"
+      storeFile = file("release.keystore")
+      storePassword = "attendance123"
+      keyAlias = "attendance_alias"
+      keyPassword = "attendance123"
     }
   }
 
