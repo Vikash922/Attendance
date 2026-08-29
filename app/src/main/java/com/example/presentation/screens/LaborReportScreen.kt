@@ -1,0 +1,651 @@
+package com.example.presentation.screens
+
+import android.widget.Toast
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.PictureAsPdf
+import androidx.compose.material.icons.filled.ReceiptLong
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.derivedStateOf
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.R
+import com.example.core.util.LaborCalendarHelper
+import com.example.core.util.PdfReportGenerator
+import com.example.presentation.theme.LaborBlue
+import com.example.presentation.viewmodel.LaborViewModel
+import com.example.presentation.viewmodel.Screen
+import java.util.Locale
+
+@Composable
+fun LaborReportScreen(
+    workerId: String,
+    viewModel: LaborViewModel,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+    val workersState = viewModel.workers.collectAsStateWithLifecycle()
+    val selectedMonth by viewModel.selectedMonth.collectAsStateWithLifecycle()
+    val workerState = remember(workerId) { derivedStateOf { workersState.value.firstOrNull { it.id == workerId } } }
+    val worker = workerState.value
+
+    if (worker == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("Worker not found", color = Color(0xFF64748B))
+        }
+        return
+    }
+
+    // 1. Calculate Accurate Month Stats via single source of truth
+    val (year, monthNum) = LaborCalendarHelper.parseYearMonth(selectedMonth)
+    val fullMonthName = "${LaborCalendarHelper.monthsFull.getOrElse(monthNum - 1) { "August" }} $year"
+
+    val monthStats = remember(worker, selectedMonth) {
+        worker.calculateMonthStats(selectedMonth)
+    }
+    val totalGrossEarnings = monthStats.balance + monthStats.totalAdvance
+
+    val slipText = remember(worker, selectedMonth) {
+        PdfReportGenerator.generateWorkerReportText(worker, selectedMonth, monthStats)
+    }
+
+    Scaffold(
+        modifier = modifier.fillMaxSize(),
+        containerColor = Color(0xFFF8FAFC),
+        topBar = {
+            Surface(
+                color = Color.White,
+                shadowElevation = 1.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = { viewModel.navigateTo(Screen.LaborDetail(worker.id)) },
+                        modifier = Modifier.testTag("report_back_btn")
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color(0xFF1E293B)
+                        )
+                    }
+                    Text(
+                        text = "Worker Report",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1E293B)
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    // Month pill indicator
+                    Surface(
+                        shape = RoundedCornerShape(20.dp),
+                        color = Color(0xFFEFF6FF),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFDBEAFE)),
+                        modifier = Modifier.padding(end = 12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CalendarMonth,
+                                contentDescription = null,
+                                tint = LaborBlue,
+                                modifier = Modifier.size(13.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = fullMonthName,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = LaborBlue
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        bottomBar = {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = Color.White,
+                shadowElevation = 8.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Primary 'Share PDF' Blue Pill Button
+                    Button(
+                        onClick = { viewModel.shareWorkerReport(worker) },
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(46.dp)
+                            .testTag("share_pdf_btn"),
+                        shape = RoundedCornerShape(23.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1656D6))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PictureAsPdf,
+                            contentDescription = null,
+                            tint = Color.White,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Share PDF",
+                            fontSize = 14.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+
+                    // Quick WhatsApp Share Button
+                    Surface(
+                        modifier = Modifier
+                            .size(46.dp)
+                            .clip(CircleShape)
+                            .clickable { viewModel.shareWorkerReport(worker) },
+                        shape = CircleShape,
+                        color = Color(0xFF25D366)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_whatsapp),
+                                contentDescription = "Share on WhatsApp",
+                                tint = Color.White,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    ) { innerPadding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp)
+        ) {
+            // Worker Profile Header Card
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 14.dp, vertical = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(Color(0xFFEFF6FF), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = worker.name.take(1).uppercase(),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = LaborBlue
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = worker.name,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF0F172A)
+                            )
+                            if (worker.phoneNumber.isNotBlank()) {
+                                Text(
+                                    text = worker.phoneNumber,
+                                    fontSize = 12.sp,
+                                    color = Color(0xFF64748B)
+                                )
+                            }
+                        }
+                        // Wage / Salary Pill
+                        val isMonthly = worker.salaryType.equals("Monthly", ignoreCase = true)
+                        val rateLabel = if (isMonthly) "Salary: ₹${worker.dailyWage.toInt()}/mo" else "Rate: ₹${worker.dailyWage.toInt()}/day"
+                        Surface(
+                            shape = RoundedCornerShape(6.dp),
+                            color = Color(0xFFF1F5F9)
+                        ) {
+                            Text(
+                                text = rateLabel,
+                                fontSize = 11.5.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Color(0xFF475569),
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            // Attendance Section Card
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp)
+                    ) {
+                        Text(
+                            text = "ATTENDANCE SUMMARY",
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF64748B),
+                            letterSpacing = 0.6.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Row 1: Present | Absent | Overtime
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            val presentDisplay = if (monthStats.presentCount % 1.0 == 0.0) "${monthStats.presentCount.toInt()}" else String.format(Locale.ENGLISH, "%.1f", monthStats.presentCount)
+                            ReportMetricBox(
+                                label = "Present",
+                                value = presentDisplay,
+                                valueColor = Color(0xFF16A34A),
+                                bgColor = Color(0xFFF0FDF4),
+                                borderColor = Color(0xFFDCFCE7),
+                                modifier = Modifier.weight(1f)
+                            )
+                            val absentDisplay = if (monthStats.absentCount % 1.0 == 0.0) "${monthStats.absentCount.toInt()}" else String.format(Locale.ENGLISH, "%.1f", monthStats.absentCount)
+                            ReportMetricBox(
+                                label = "Absent",
+                                value = absentDisplay,
+                                valueColor = Color(0xFFDC2626),
+                                bgColor = Color(0xFFFEF2F2),
+                                borderColor = Color(0xFFFEE2E2),
+                                modifier = Modifier.weight(1f)
+                            )
+                            val otDisplay = if (monthStats.overtimeHours % 1.0 == 0.0) "${monthStats.overtimeHours.toInt()}h" else "${String.format(Locale.ENGLISH, "%.1f", monthStats.overtimeHours)}h"
+                            ReportMetricBox(
+                                label = "Overtime",
+                                value = otDisplay,
+                                valueColor = Color(0xFF0F172A),
+                                bgColor = Color(0xFFF8FAFC),
+                                borderColor = Color(0xFFE2E8F0),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        // Row 2: Half Day | P + 1/2 | P+P
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            val halfDayDisplay = if (monthStats.halfDayCount % 1.0 == 0.0) "${monthStats.halfDayCount.toInt()}" else String.format(Locale.ENGLISH, "%.1f", monthStats.halfDayCount)
+                            ReportMetricBox(
+                                label = "Half Day",
+                                value = halfDayDisplay,
+                                valueColor = Color(0xFFD97706),
+                                bgColor = Color(0xFFFFFBEB),
+                                borderColor = Color(0xFFFEF3C7),
+                                modifier = Modifier.weight(1f)
+                            )
+                            val presentHalfDisplay = if (monthStats.presentHalfCount % 1.0 == 0.0) "${monthStats.presentHalfCount.toInt()}" else String.format(Locale.ENGLISH, "%.1f", monthStats.presentHalfCount)
+                            ReportMetricBox(
+                                label = "P + 1/2",
+                                value = presentHalfDisplay,
+                                valueColor = Color(0xFF0F172A),
+                                bgColor = Color(0xFFF8FAFC),
+                                borderColor = Color(0xFFE2E8F0),
+                                modifier = Modifier.weight(1f)
+                            )
+                            val doubleDisplay = if (monthStats.doubleCount % 1.0 == 0.0) "${monthStats.doubleCount.toInt()}" else String.format(Locale.ENGLISH, "%.1f", monthStats.doubleCount)
+                            ReportMetricBox(
+                                label = "P+P",
+                                value = doubleDisplay,
+                                valueColor = Color(0xFF0F172A),
+                                bgColor = Color(0xFFF8FAFC),
+                                borderColor = Color(0xFFE2E8F0),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+
+                        // Paid Leave (Optional Row if > 0)
+                        if (monthStats.paidLeaveCount > 0) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                val paidLeaveDisplay = if (monthStats.paidLeaveCount % 1.0 == 0.0) "${monthStats.paidLeaveCount.toInt()}" else String.format(Locale.ENGLISH, "%.1f", monthStats.paidLeaveCount)
+                                ReportMetricBox(
+                                    label = "Paid Leave (PA)",
+                                    value = paidLeaveDisplay,
+                                    valueColor = Color(0xFF7C3AED),
+                                    bgColor = Color(0xFFF5F3FF),
+                                    borderColor = Color(0xFFEDE9FE),
+                                    modifier = Modifier.weight(1f)
+                                )
+                                Spacer(modifier = Modifier.weight(2f))
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            // Payment Card (Compact & Professional)
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp)
+                    ) {
+                        Text(
+                            text = "PAYMENT BREAKDOWN",
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF64748B),
+                            letterSpacing = 0.6.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Advance Amount Row
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Advance Amount",
+                                fontSize = 13.5.sp,
+                                color = Color(0xFF475569)
+                            )
+                            Text(
+                                text = String.format(Locale.ENGLISH, "₹%,.2f", monthStats.totalAdvance),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFDC2626)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Total Earnings Row
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Total Earnings",
+                                fontSize = 13.5.sp,
+                                color = Color(0xFF475569)
+                            )
+                            Text(
+                                text = String.format(Locale.ENGLISH, "₹%,.2f", totalGrossEarnings),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF0F172A)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+                        HorizontalDivider(color = Color(0xFFF1F5F9), thickness = 1.dp)
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Net Balance Highlight
+                        Surface(
+                            shape = RoundedCornerShape(8.dp),
+                            color = Color(0xFFF8FAFC),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    text = "Net Balance Payable",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF0F172A)
+                                )
+                                Text(
+                                    text = String.format(Locale.ENGLISH, "₹%,.2f", monthStats.balance),
+                                    fontSize = 15.5.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = if (monthStats.balance >= 0) Color(0xFF1656D6) else Color(0xFFDC2626)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            // Formatted Slip Preview Card
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(28.dp)
+                                        .background(Color(0xFFEFF6FF), CircleShape),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ReceiptLong,
+                                        contentDescription = null,
+                                        tint = LaborBlue,
+                                        modifier = Modifier.size(15.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Column {
+                                    Text(
+                                        text = "Formatted Slip Preview",
+                                        fontSize = 13.5.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF0F172A)
+                                    )
+                                    Text(
+                                        text = selectedMonth,
+                                        fontSize = 11.sp,
+                                        color = Color(0xFF64748B)
+                                    )
+                                }
+                            }
+
+                            // Copy Slip Text Button
+                            Surface(
+                                shape = RoundedCornerShape(6.dp),
+                                color = Color(0xFFEFF6FF),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFDBEAFE)),
+                                modifier = Modifier.clip(RoundedCornerShape(6.dp)).clickable {
+                                    clipboardManager.setText(AnnotatedString(slipText))
+                                    Toast.makeText(context, "Slip copied to clipboard!", Toast.LENGTH_SHORT).show()
+                                }
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.ContentCopy,
+                                        contentDescription = "Copy",
+                                        tint = LaborBlue,
+                                        modifier = Modifier.size(13.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = "Copy",
+                                        fontSize = 11.5.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = LaborBlue
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Monospace Slip Container
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(8.dp),
+                            color = Color(0xFFF8FAFC),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE2E8F0))
+                        ) {
+                            Text(
+                                text = slipText,
+                                modifier = Modifier.padding(10.dp),
+                                fontSize = 11.5.sp,
+                                fontFamily = FontFamily.Monospace,
+                                color = Color(0xFF334155),
+                                lineHeight = 17.sp
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun ReportMetricBox(
+    label: String,
+    value: String,
+    valueColor: Color,
+    bgColor: Color,
+    borderColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        shape = RoundedCornerShape(8.dp),
+        color = bgColor,
+        border = androidx.compose.foundation.BorderStroke(1.dp, borderColor),
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 7.dp)
+        ) {
+            Text(
+                text = label,
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF64748B),
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = value,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                color = valueColor
+            )
+        }
+    }
+}

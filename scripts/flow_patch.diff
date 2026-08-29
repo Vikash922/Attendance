@@ -1,0 +1,27 @@
+--- app/src/main/java/com/example/presentation/viewmodel/LaborViewModel.kt
++++ app/src/main/java/com/example/presentation/viewmodel/LaborViewModel.kt
+@@ -35,6 +35,7 @@
+ import kotlinx.coroutines.flow.combine
+ import kotlinx.coroutines.flow.stateIn
++import kotlinx.coroutines.flow.flowOn
+ import kotlinx.coroutines.launch
+ import kotlinx.coroutines.withContext
+ import kotlinx.coroutines.Dispatchers
+@@ -167,7 +168,7 @@
+     val filteredWorkers = combine(workers, workerSearchQuery) { list, query ->
+         if (query.isBlank()) list
+         else list.filter { it.name.contains(query, ignoreCase = true) || it.phoneNumber.contains(query) }
+-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
++    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+ 
+     val filteredTransactions = combine(transactions, transactionSearchQuery) { list, query ->
+         val validList = list.filter { it.amount > 0.0 }.sortedWith(
+             compareByDescending<CashTransaction> { it.fullDate.ifBlank { "0000-00-00" } }
+                 .thenByDescending { it.timestamp }
+         )
+         if (query.isBlank()) validList
+         else validList.filter { it.notes.contains(query, ignoreCase = true) || it.dateDisplay.contains(query, ignoreCase = true) }
+-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
++    }.flowOn(Dispatchers.Default).stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+ 
+     fun navigateTo(screen: Screen) {

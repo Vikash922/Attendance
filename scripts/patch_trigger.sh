@@ -1,0 +1,26 @@
+cat << 'INNEREOF' > trigger_patch.diff
+--- app/src/main/java/com/example/presentation/viewmodel/LaborViewModel.kt
++++ app/src/main/java/com/example/presentation/viewmodel/LaborViewModel.kt
+@@ -388,18 +388,7 @@
+ 
+     fun triggerCloudSync() {
+-        viewModelScope.launch {
++        viewModelScope.launch(Dispatchers.IO) {
+             repository.syncMetadataToCloud()
+-            val totalAdv = workers.value.sumOf { w -> w.attendance.values.sumOf { it.advanceAmount } }
+-            val netCash = transactions.value.filter { it.type == com.example.domain.model.TransactionType.CASH_IN }.sumOf { it.amount } - transactions.value.filter { it.type == com.example.domain.model.TransactionType.CASH_OUT }.sumOf { it.amount }
+-            val summary = if (workers.value.isEmpty()) "No workers registered" else workers.value.joinToString("; ") { 
+-                val unit = if (it.salaryType.equals("Monthly", ignoreCase = true)) "month" else "day"
+-                "${it.name}: ₹${it.dailyWage}/$unit" 
+-            }
+-            CloudSyncService.syncDataToCloud(
+-                workerCount = workers.value.size,
+-                transactionCount = transactions.value.size,
+-                totalAdvanceGiven = totalAdv,
+-                cashbookBalance = netCash,
+-                workerSummary = summary
+-            )
+         }
+     }
+INNEREOF
+patch -p0 < trigger_patch.diff

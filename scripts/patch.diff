@@ -1,0 +1,52 @@
+--- app/src/main/java/com/example/data/remote/FirestoreSyncService.kt
++++ app/src/main/java/com/example/data/remote/FirestoreSyncService.kt
+@@ -21,6 +21,8 @@
+ import kotlinx.coroutines.SupervisorJob
+ import kotlinx.coroutines.Dispatchers
+ import kotlinx.coroutines.launch
++import kotlinx.coroutines.async
++import kotlinx.coroutines.coroutineScope
+ 
+ object FirestoreSyncService {
+     private const val TAG = "FirestoreSyncService"
+@@ -232,20 +234,31 @@
+             }
+ 
+             // Fetch Profile
+-            var profileDoc = userDoc.collection("profile").document("settings").get().await()
+-            var workersRes = userDoc.collection("workers").get().await()
+-            var txRes = userDoc.collection("payments").get().await()
++            var profileDoc: DocumentSnapshot
++            var workersRes: com.google.firebase.firestore.QuerySnapshot
++            var txRes: com.google.firebase.firestore.QuerySnapshot
++            
++            coroutineScope {
++                val profileDeferred = async { userDoc!!.collection("profile").document("settings").get().await() }
++                val workersDeferred = async { userDoc!!.collection("workers").get().await() }
++                val txDeferred = async { userDoc!!.collection("payments").get().await() }
++                profileDoc = profileDeferred.await()
++                workersRes = workersDeferred.await()
++                txRes = txDeferred.await()
++            }
+             
+             // IF EMPTY AND WE HAVE AN EMAIL, TRY TO FETCH BY LEGACY EMAIL ID!
+             if (workersRes.documents.isEmpty() && txRes.documents.isEmpty() && userEmail != null && uid != null) {
+                 val legacyUserDoc = db.collection("users").document(userEmail.lowercase())
+-                val legacyWorkersRes = legacyUserDoc.collection("workers").get().await()
++                
++                val (legacyWorkersRes, legacyProfileDoc, legacyTxRes) = coroutineScope {
++                    val wDef = async { legacyUserDoc.collection("workers").get().await() }
++                    val pDef = async { legacyUserDoc.collection("profile").document("settings").get().await() }
++                    val tDef = async { legacyUserDoc.collection("payments").get().await() }
++                    Triple(wDef.await(), pDef.await(), tDef.await())
++                }
++                
+                 if (legacyWorkersRes.documents.isNotEmpty()) {
+                     userDoc = db.collection("users").document(uid) // Switch to new UID doc
+-                    profileDoc = legacyUserDoc.collection("profile").document("settings").get().await()
+                     workersRes = legacyWorkersRes
+-                    txRes = legacyUserDoc.collection("payments").get().await()
++                    profileDoc = legacyProfileDoc
++                    txRes = legacyTxRes
+                     
+                     // Auto-migrate in background
