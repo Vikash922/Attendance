@@ -30,3 +30,12 @@
 -keep class androidx.credentials.** { *; }
 -keep class com.google.android.libraries.identity.googleid.** { *; }
 
+
+# WorkManager & Room (Fix for InitializationProvider crash)
+-keep class androidx.work.** { *; }
+-keep class androidx.room.** { *; }
+-dontwarn androidx.work.**
+-dontwarn androidx.room.**
+
+# Keep custom Worker classes
+-keep class com.example.data.remote.CloudSyncWorker { *; }
