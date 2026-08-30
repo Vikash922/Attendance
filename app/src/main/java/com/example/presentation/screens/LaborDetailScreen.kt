@@ -1925,22 +1925,22 @@ fun LaborAttendanceDayRow(
                             color = if (isOtActive) Color.White else Color(0xFF7E3B7D)
                         )
                     }
+                } // Close inner Row here, so 3-dots goes to the right side of SpaceBetween!
                     
-                    // 3 dots More Menu (Mark Attendance Sheet) moved next to OT
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .clickable { onOpenAttendanceSheet(dayInfo.day, status) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "Mark Attendance",
-                            tint = Color(0xFF475569),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
+                // 3 dots More Menu (Mark Attendance Sheet) fixed to right
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape)
+                        .clickable { onOpenAttendanceSheet(dayInfo.day, status) },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = "Mark Attendance",
+                        tint = Color(0xFF475569),
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
 

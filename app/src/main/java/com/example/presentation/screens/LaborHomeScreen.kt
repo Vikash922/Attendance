@@ -161,11 +161,13 @@ fun LaborHomeScreen(
                 androidx.compose.foundation.layout.Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 2.dp)
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                        .height(48.dp)
                         .shadow(elevation = 3.dp, shape = RoundedCornerShape(12.dp))
                         .background(Color.White, RoundedCornerShape(12.dp))
                         .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(12.dp))
-                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .padding(horizontal = 16.dp),
+                    contentAlignment = Alignment.CenterStart
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
