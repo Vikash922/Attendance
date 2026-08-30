@@ -108,6 +108,7 @@ fun SettingsScreen(
         containerColor = Color(0xFFF8FAFC),
         topBar = {
             TopAppBar(
+                windowInsets = androidx.compose.foundation.layout.WindowInsets(0.dp),
                 title = {
                     Text(
                         text = AppStrings.get("settings", lang),

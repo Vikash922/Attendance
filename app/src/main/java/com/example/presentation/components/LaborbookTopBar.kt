@@ -38,8 +38,8 @@ fun LaborbookHomeTopBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 14.dp),
+                
+                .padding(start = 20.dp, end = 20.dp, top = 4.dp, bottom = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -82,3 +82,4 @@ fun LaborbookHomeTopBar(
         }
     }
 }
+
