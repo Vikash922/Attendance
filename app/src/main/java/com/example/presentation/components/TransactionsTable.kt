@@ -1,5 +1,6 @@
 package com.example.presentation.components
 
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -7,6 +8,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +60,7 @@ fun TransactionsTable(
     transactions: List<CashTransaction>,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = Color(0xFFCBD5E1)
+    val borderColor = Color(0xFFE5E7EB)
 
     Column(
         modifier = modifier
@@ -83,7 +86,7 @@ fun TransactionsTable(
                 Text(
                     text = "Date",
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.Black,
+                    fontWeight = FontWeight.Bold,
                     color = Color.Black,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -103,7 +106,7 @@ fun TransactionsTable(
                 Text(
                     text = "Notes",
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.Black,
+                    fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
             }
@@ -122,7 +125,7 @@ fun TransactionsTable(
                 Text(
                     text = "₹ Amount",
                     fontSize = 15.sp,
-                    fontWeight = FontWeight.Black,
+                    fontWeight = FontWeight.Bold,
                     color = Color.Black
                 )
             }
@@ -177,17 +180,17 @@ fun TransactionsTable(
                         ) {
                             Text(
                                 text = parsedDate.day,
-                                fontSize = 17.sp,
-                                fontWeight = FontWeight.Black,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
                                 color = Color.Black,
-                                lineHeight = 17.sp
+                                lineHeight = 16.sp
                             )
                             Spacer(modifier = Modifier.height(2.dp))
                             Text(
                                 text = parsedDate.dayOfWeek,
-                                fontSize = 12.sp,
+                                fontSize = 13.sp,
                                 color = Color.Gray,
-                                lineHeight = 12.sp
+                                lineHeight = 13.sp
                             )
                         }
 
@@ -205,7 +208,7 @@ fun TransactionsTable(
                             Text(
                                 text = tx.notes.takeIf { it.isNotBlank() } ?: if (isCashIn) "Cash In" else "Expense",
                                 fontSize = 15.sp,
-                                fontWeight = FontWeight.SemiBold,
+                                fontWeight = FontWeight.Normal,
                                 color = Color.Black,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -225,18 +228,25 @@ fun TransactionsTable(
                         Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(borderColor))
 
                         // Amount Column (36%)
-                        Box(
+                        Row(
                             modifier = Modifier
                                 .weight(0.36f)
                                 .fillMaxHeight()
                                 .padding(horizontal = 12.dp),
-                            contentAlignment = Alignment.CenterStart
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
                                 text = "₹${tx.amount.toInt()}",
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = if (isCashIn) Color(0xFF28A745) else Color(0xFFDC3545)
+                            )
+                            Icon(
+                                imageVector = androidx.compose.material.icons.Icons.Default.ChevronRight,
+                                contentDescription = "View Details",
+                                tint = Color(0xFFCBD5E1),
+                                modifier = Modifier.size(18.dp)
                             )
                         }
                     }

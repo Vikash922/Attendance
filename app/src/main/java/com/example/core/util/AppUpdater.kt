@@ -88,7 +88,7 @@ object AppUpdater {
             override fun onReceive(c: Context, intent: Intent) {
                 val id = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1)
                 if (downloadId == id) {
-                    installApk(context, destination)
+                    installApkFromDownloadManager(context, id)
                     context.unregisterReceiver(this)
                 }
             }
@@ -101,21 +101,22 @@ object AppUpdater {
         }
     }
 
-    private fun installApk(context: Context, apkFile: File) {
+    private fun installApkFromDownloadManager(context: Context, downloadId: Long) {
         try {
-            val uri = FileProvider.getUriForFile(
-                context,
-                "${context.packageName}.fileprovider",
-                apkFile
-            )
-            val intent = Intent(Intent.ACTION_VIEW).apply {
-                setDataAndType(uri, "application/vnd.android.package-archive")
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val uri = downloadManager.getUriForDownloadedFile(downloadId)
+            if (uri != null) {
+                val intent = Intent(Intent.ACTION_VIEW).apply {
+                    setDataAndType(uri, "application/vnd.android.package-archive")
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                }
+                context.startActivity(intent)
+            } else {
+                Toast.makeText(context, "Failed to get download URI.", Toast.LENGTH_SHORT).show()
             }
-            context.startActivity(intent)
         } catch (e: Exception) {
-            Log.e("AppUpdater", "Error installing APK", e)
-            Toast.makeText(context, "Failed to launch installer. Please install manually from Downloads.", Toast.LENGTH_LONG).show()
+            Log.e("AppUpdater", "Error installing APK from DM", e)
+            Toast.makeText(context, "Failed to launch installer automatically. Please install manually.", Toast.LENGTH_LONG).show()
         }
     }
 }

@@ -326,7 +326,7 @@ fun EmptyLaborStateCard(
                         tint = Color.White,
                         modifier = Modifier.size(16.dp)
                     )
-                    SpacerSpacer(modifier = Modifier.width(8.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = AppStrings.get("add_labor", lang),
                         fontWeight = FontWeight.Bold,
