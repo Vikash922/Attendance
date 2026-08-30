@@ -298,15 +298,13 @@ fun CashBookScreen(
                 }
             }
         ) { innerPadding ->
-            LazyColumn(
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(bottom = 20.dp)
+                    .padding(innerPadding)
             ) {
                 // Search Bar
-                item {
-                    OutlinedTextField(
+                OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { viewModel.onTransactionSearchQueryChanged(it) },
                         placeholder = { Text(AppStrings.get("search_transactions", lang), color = Color(0xFF8E8E93), fontSize = 13.sp) },
@@ -331,13 +329,10 @@ fun CashBookScreen(
                             unfocusedContainerColor = Color.White
                         )
                     )
-                }
-
-                item { Spacer(modifier = Modifier.height(2.dp)) }
+                Spacer(modifier = Modifier.height(2.dp))
 
                 // Summary Card
-                item {
-                    Card(
+                Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp),
@@ -445,182 +440,13 @@ fun CashBookScreen(
                             }
                         }
                     }
-                }
-
-                item { Spacer(modifier = Modifier.height(10.dp)) }
+                Spacer(modifier = Modifier.height(10.dp))
 
                 // Transaction List / Empty State
-                if (displayTransactions.isEmpty()) {
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 30.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = AppStrings.get("no_transactions", lang),
-                                fontSize = 14.sp,
-                                color = Color(0xFF64748B)
-                            )
-                        }
-                    }
-                } else {
-                    // Entire Structured Compact Table matching reference screenshot
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                // No horizontal padding here so dividers go full width!
-                        ) {
-                            // Table Header Row
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Color(0xFFF9FAFB))
-                                    .height(IntrinsicSize.Min),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Text(
-                                    text = AppStrings.get("date", lang),
-                                    fontSize = 13.5.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.Black,
-                                    modifier = Modifier
-                                        .weight(0.20f)
-                                        .padding(start = 12.dp, top = 8.dp, bottom = 8.dp),
-                                    textAlign = TextAlign.Start
-                                )
-                                // Divider 1
-                                androidx.compose.foundation.layout.Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(Color.Black))
-                                
-                                Text(
-                                    text = AppStrings.get("notes", lang),
-                                    fontSize = 13.5.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.Black,
-                                    modifier = Modifier
-                                        .weight(0.44f)
-                                        .padding(horizontal = 8.dp, vertical = 8.dp),
-                                    textAlign = TextAlign.Start
-                                )
-                                // Divider 2
-                                androidx.compose.foundation.layout.Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(Color.Black))
-
-                                Text(
-                                    text = "₹ " + AppStrings.get("amount", lang),
-                                    fontSize = 13.5.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.Black,
-                                    modifier = Modifier
-                                        .weight(0.36f)
-                                        .padding(end = 12.dp, start = 8.dp, top = 8.dp, bottom = 8.dp),
-                                    textAlign = TextAlign.Start
-                                )
-                            }
-                            HorizontalDivider(color = Color.Black, thickness = 1.dp)
-                        }
-                    }
-                    
-                    itemsIndexed(
-                        items = displayTransactions,
-                        key = { _, tx -> tx.id }
-                    ) { index, tx ->
-                        Column(modifier = Modifier.fillMaxWidth()) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { viewModel.openTransactionDetail(tx) }
-                                    .testTag("tx_row_${tx.id}")
-                                    .height(IntrinsicSize.Min),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                val (dayNum, dayName) = parseDayAndWeek(tx.fullDate, tx.dateDisplay, tx.timestamp)
-
-                                // Date Column
-                                Column(
-                                    modifier = Modifier
-                                        .weight(0.20f)
-                                        .padding(start = 12.dp, top = 6.dp, bottom = 6.dp),
-                                    horizontalAlignment = Alignment.Start,
-                                    verticalArrangement = Arrangement.spacedBy(2.dp)
-                                ) {
-                                    Text(
-                                        text = dayNum,
-                                        fontSize = 14.5.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.Black
-                                    )
-                                    Text(
-                                        text = dayName,
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        color = Color(0xFF6B7280)
-                                    )
-                                }
-
-                                // Divider 1
-                                androidx.compose.foundation.layout.Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(Color.Black))
-
-                                // Notes Column
-                                Column(
-                                    modifier = Modifier
-                                        .weight(0.44f)
-                                        .padding(horizontal = 8.dp, vertical = 6.dp),
-                                    verticalArrangement = Arrangement.spacedBy(2.dp)
-                                ) {
-                                    Text(
-                                        text = tx.notes.ifBlank { "-" },
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = Color.Black,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                    Text(
-                                        text = tx.paymentMethod.name.uppercase(),
-                                        fontSize = 10.5.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        color = Color(0xFF6B7280)
-                                    )
-                                }
-
-                                // Divider 2
-                                androidx.compose.foundation.layout.Box(modifier = Modifier.width(1.dp).fillMaxHeight().background(Color.Black))
-
-                                // Amount Column
-                                Row(
-                                    modifier = Modifier
-                                        .weight(0.36f)
-                                        .padding(end = 12.dp, start = 8.dp, top = 6.dp, bottom = 6.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    val formattedAmount = if (tx.amount % 1.0 == 0.0) {
-                                        "${tx.amount.toInt()}"
-                                    } else {
-                                        "${tx.amount}"
-                                    }
-                                    Text(
-                                        text = "₹$formattedAmount",
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = if (tx.type == TransactionType.CASH_IN) Color(0xFF16A34A) else Color(0xFFDC2626)
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Default.KeyboardArrowRight,
-                                        contentDescription = null,
-                                        tint = Color(0xFFD1D5DB),
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                            }
-                            HorizontalDivider(color = Color.Black, thickness = 1.dp)
-                        }
-                    }
-                    item { Spacer(modifier = Modifier.height(16.dp)) }
-                }
-            }
+                com.example.presentation.components.TransactionsTable(
+                    transactions = displayTransactions,
+                    modifier = Modifier.weight(1f)
+                )
         }
 
         // Calendar Month Selection Bottom Sheet
