@@ -448,6 +448,7 @@ fun CashBookScreen(
                     modifier = Modifier.weight(1f)
                 )
         }
+        }
 
         // Calendar Month Selection Bottom Sheet
         if (showMonthDialog) {
