@@ -639,7 +639,7 @@ class LaborRepository(
                         if (!name.isNullOrBlank() && cleanNum.isNotBlank() && seenNumbers.add(cleanNum)) {
                             list.add(
                                 SavedContact(
-                                    id = cid ?: UUID.randomUUID().toString(),
+                                    id = UUID.randomUUID().toString(),
                                     name = name,
                                     phoneNumber = cleanNum,
                                     avatarColorHex = colors[colorIdx % colors.size],

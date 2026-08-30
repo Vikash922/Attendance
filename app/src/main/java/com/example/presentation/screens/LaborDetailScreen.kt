@@ -711,7 +711,7 @@ fun LaborDetailScreen(
                         // Col 2: Attendance
                         Box(
                             modifier = Modifier
-                                .weight(1.15f)
+                                .weight(0.95f)
                                 .fillMaxHeight()
                                 .padding(start = 12.dp),
                             contentAlignment = Alignment.CenterStart
@@ -729,7 +729,7 @@ fun LaborDetailScreen(
                         // Col 3: ₹ / Notes
                         Box(
                             modifier = Modifier
-                                .weight(1.15f)
+                                .weight(1.35f)
                                 .fillMaxHeight()
                                 .padding(start = 12.dp),
                             contentAlignment = Alignment.CenterStart
@@ -1819,7 +1819,7 @@ fun LaborAttendanceDayRow(
             // Col 2: Attendance
             Row(
                 modifier = Modifier
-                    .weight(1.15f)
+                    .weight(0.95f)
                     .fillMaxHeight()
                     .padding(horizontal = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -1950,7 +1950,7 @@ fun LaborAttendanceDayRow(
             // Col 3: ₹ / Notes
             Row(
                 modifier = Modifier
-                    .weight(1.15f)
+                    .weight(1.35f)
                     .fillMaxHeight()
                     .clickable { onAdvanceClicked(dayInfo.day) }
                     .padding(start = 12.dp, end = 8.dp),

@@ -154,14 +154,14 @@ fun LaborHomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
-            contentPadding = PaddingValues(top = 8.dp, bottom = 80.dp)
+            contentPadding = PaddingValues(top = 0.dp, bottom = 80.dp)
         ) {
             item {
                 // Search Bar
                 androidx.compose.foundation.layout.Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                        .padding(horizontal = 12.dp, vertical = 2.dp)
                         .shadow(elevation = 3.dp, shape = RoundedCornerShape(12.dp))
                         .background(Color.White, RoundedCornerShape(12.dp))
                         .border(1.dp, Color(0xFFE5E7EB), RoundedCornerShape(12.dp))
@@ -199,7 +199,7 @@ fun LaborHomeScreen(
                 }
 
                 // My Labour Title Label
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "My Labour",
                     fontSize = 16.sp,
@@ -326,7 +326,7 @@ fun EmptyLaborStateCard(
                         tint = Color.White,
                         modifier = Modifier.size(16.dp)
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                    SpacerSpacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = AppStrings.get("add_labor", lang),
                         fontWeight = FontWeight.Bold,
