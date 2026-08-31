@@ -17,8 +17,8 @@ android {
     applicationId = "com.aistudio.laborbook.krmpxz"
     minSdk = 24
     targetSdk = 36
-    versionCode = 6
-    versionName = "1.5"
+    versionCode = 7
+    versionName = "1.6"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -116,6 +116,8 @@ dependencies {
   // Firestore for encrypted cloud sync:
   implementation(libs.firebase.firestore)
   implementation(libs.firebase.analytics)
+  implementation(libs.firebase.messaging)
+  implementation(libs.firebase.inappmessaging.display)
 
   // Firebase Auth and Google Sign-In via Credential Manager:
   implementation(libs.firebase.auth)
