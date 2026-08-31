@@ -135,6 +135,35 @@ fun LaborDetailScreen(
     val monthDaysInfo = remember(currentYear, currentMonthNum) { LaborCalendarHelper.getMonthDaysInfo(currentYear, currentMonthNum) }
     val context = LocalContext.current
 
+    val showcaseState = com.example.presentation.components.LocalShowcaseState.current
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        val prefs = context.getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
+        if (!prefs.getBoolean("has_seen_detail_tour", false)) {
+            kotlinx.coroutines.delay(600)
+            showcaseState.startTour(
+                listOf(
+                    com.example.presentation.components.ShowcaseStep(
+                        targetId = "attendance_pills",
+                        title = "Mark Attendance",
+                        description = "P (Present) ya A (Absent) par click karke attendance lagayein. Dusri baar dabane se 1/2 day ya PA lagta hai."
+                    ),
+                    com.example.presentation.components.ShowcaseStep(
+                        targetId = "ot_pill",
+                        title = "Overtime (OT)",
+                        description = "OT button par click karke aap worker ki extra duty ya Overtime hours record kar sakte hain."
+                    ),
+                    com.example.presentation.components.ShowcaseStep(
+                        targetId = "three_dots",
+                        title = "Notes & Advance",
+                        description = "Is 3-dot menu par click karke aap us din ka koi khas Note likh sakte hain ya worker ko diya gaya Advance amount dal sakte hain."
+                    )
+                )
+            )
+            prefs.edit().putBoolean("has_seen_detail_tour", true).apply()
+        }
+    }
+
+
     var refreshTrigger by remember { androidx.compose.runtime.mutableIntStateOf(0) }
     val coroutineScope = rememberCoroutineScope()
     val refreshAnim = remember { androidx.compose.animation.core.Animatable(0f) }
@@ -755,6 +784,7 @@ fun LaborDetailScreen(
                 val dayRecord = worker.attendance[dayInfo.dateKey]
 
                 LaborAttendanceDayRow(
+                    isFirstItem = isFirstRow,
                     dayInfo = dayInfo,
                     isLast = index == monthDaysInfo.lastIndex,
                     status = dayRecord?.status ?: com.example.domain.model.AttendanceStatus.UNMARKED,
@@ -1751,6 +1781,7 @@ private val DividerStrokeColor = Color(0xFFD1D5DB)
 
 @Composable
 fun LaborAttendanceDayRow(
+    isFirstItem: Boolean = false,
     dayInfo: MonthDayInfo,
     isLast: Boolean = false,
     status: AttendanceStatus,
@@ -1827,10 +1858,12 @@ fun LaborAttendanceDayRow(
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = if (isFirstItem) Modifier.com.example.presentation.components.showcaseTarget("attendance_pills") else Modifier
                 ) {
                     when (status) {
                         AttendanceStatus.ABSENT -> {
+                            // Only Solid Red A (P is hidden)
                             // Only Solid Red A (P is hidden)
                             AttendancePillButton(
                                 label = "A",
@@ -1905,6 +1938,7 @@ fun LaborAttendanceDayRow(
                     val isOtActive = otHours > 0 || status == AttendanceStatus.OVERTIME
                     Box(
                         modifier = Modifier
+                            .then(if (isFirstItem) Modifier.com.example.presentation.components.showcaseTarget("ot_pill") else Modifier)
                             .height(30.dp)
                             .widthIn(min = 34.dp)
                             .clip(RoundedCornerShape(8.dp))
@@ -1930,6 +1964,7 @@ fun LaborAttendanceDayRow(
                 // 3 dots More Menu (Mark Attendance Sheet) fixed to right
                 Box(
                     modifier = Modifier
+                        .then(if (isFirstItem) Modifier.com.example.presentation.components.showcaseTarget("three_dots") else Modifier)
                         .size(36.dp)
                         .clip(CircleShape)
                         .clickable { onOpenAttendanceSheet(dayInfo.day, status) },

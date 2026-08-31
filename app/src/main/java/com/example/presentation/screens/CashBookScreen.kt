@@ -264,7 +264,7 @@ fun CashBookScreen(
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(48.dp)
-                                    .testTag("btn_cash_in"),
+                                    .testTag("btn_cash_in").com.example.presentation.components.showcaseTarget("cash_in_btn"),
                                 shape = RoundedCornerShape(24.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00875A))
                             ) {
@@ -282,7 +282,7 @@ fun CashBookScreen(
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(48.dp)
-                                    .testTag("btn_cash_out"),
+                                    .testTag("btn_cash_out").com.example.presentation.components.showcaseTarget("cash_out_btn"),
                                 shape = RoundedCornerShape(24.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935))
                             ) {
@@ -334,6 +334,7 @@ fun CashBookScreen(
                 // Summary Card
                 Card(
                         modifier = Modifier
+                            .com.example.presentation.components.showcaseTarget("cash_summary")
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp),
                         shape = RoundedCornerShape(8.dp),
@@ -415,6 +416,7 @@ fun CashBookScreen(
                             // 'View Report' light blue pill button
                             Box(
                                 modifier = Modifier
+                                    .com.example.presentation.components.showcaseTarget("view_report_btn")
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(Color(0xFFEFF6FF))
