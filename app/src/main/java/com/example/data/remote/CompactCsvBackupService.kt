@@ -179,7 +179,7 @@ object CompactCsvBackupService {
                             profile = UserProfile(
                                 name = tokens.getOrElse(0) { "Manager" },
                                 businessName = tokens.getOrElse(1) { "Laborbook Pro Master" },
-                                mobile = tokens.getOrElse(2) { "7848894498" },
+                                mobile = tokens.getOrElse(2) { "" },
                                 email = tokens.getOrElse(3) { accountEmail },
                                 language = tokens.getOrElse(4) { "English" },
                                 isPro = tokens.getOrElse(5) { "true" }.toBoolean(),

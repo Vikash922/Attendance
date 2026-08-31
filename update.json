@@ -1,6 +1,6 @@
 {
-    "versionCode": 8,
-    "versionName": "1.7",
+    "versionCode": 9,
+    "versionName": "1.8",
     "apkUrl": "https://github.com/Vikash922/Attendance/releases/latest/download/app-release.apk",
     "releaseNotes": "Fix contact list crash, improve UI layouts and table column spacing."
 }

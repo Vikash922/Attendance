@@ -586,10 +586,21 @@ class LaborRepository(
                     return@withContext Result.failure(Exception("Cloud backup completed, but sign out failed. Your data is still available on this device."))
                 }
 
-                _userProfile.value = _userProfile.value.copy(
+                // Clear all personal info on logout so the next user doesn't inherit it
+                _userProfile.value = UserProfile(
                     isLoggedIn = false,
                     authProvider = "None",
+                    language = _userProfile.value.language
                 )
+                // Clear local backup files to prevent cross-account data leaking
+                try {
+                    val csvDir = java.io.File(context.filesDir, "csv_backups")
+                    if (csvDir.exists()) {
+                        csvDir.deleteRecursively()
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to clear local backups on logout", e)
+                }
                 persistProfile()
                 _workers.value = emptyList()
                 _transactions.value = emptyList()

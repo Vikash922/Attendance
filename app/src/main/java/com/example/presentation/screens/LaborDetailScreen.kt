@@ -90,6 +90,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.animation.core.tween
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.Composable
+import com.example.presentation.components.showcaseTarget
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.mutableFloatStateOf
@@ -784,7 +785,7 @@ fun LaborDetailScreen(
                 val dayRecord = worker.attendance[dayInfo.dateKey]
 
                 LaborAttendanceDayRow(
-                    isFirstItem = isFirstRow,
+                    isFirstItem = index == 0,
                     dayInfo = dayInfo,
                     isLast = index == monthDaysInfo.lastIndex,
                     status = dayRecord?.status ?: com.example.domain.model.AttendanceStatus.UNMARKED,
@@ -1859,7 +1860,7 @@ fun LaborAttendanceDayRow(
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = if (isFirstItem) Modifier.com.example.presentation.components.showcaseTarget("attendance_pills") else Modifier
+                    modifier = if (isFirstItem) Modifier.showcaseTarget("attendance_pills") else Modifier
                 ) {
                     when (status) {
                         AttendanceStatus.ABSENT -> {
@@ -1938,7 +1939,7 @@ fun LaborAttendanceDayRow(
                     val isOtActive = otHours > 0 || status == AttendanceStatus.OVERTIME
                     Box(
                         modifier = Modifier
-                            .then(if (isFirstItem) Modifier.com.example.presentation.components.showcaseTarget("ot_pill") else Modifier)
+                            .then(if (isFirstItem) Modifier.showcaseTarget("ot_pill") else Modifier)
                             .height(30.dp)
                             .widthIn(min = 34.dp)
                             .clip(RoundedCornerShape(8.dp))
@@ -1964,7 +1965,7 @@ fun LaborAttendanceDayRow(
                 // 3 dots More Menu (Mark Attendance Sheet) fixed to right
                 Box(
                     modifier = Modifier
-                        .then(if (isFirstItem) Modifier.com.example.presentation.components.showcaseTarget("three_dots") else Modifier)
+                        .then(if (isFirstItem) Modifier.showcaseTarget("three_dots") else Modifier)
                         .size(36.dp)
                         .clip(CircleShape)
                         .clickable { onOpenAttendanceSheet(dayInfo.day, status) },
