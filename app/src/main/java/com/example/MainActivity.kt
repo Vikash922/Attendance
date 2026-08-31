@@ -104,17 +104,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             LaborbookTheme {
-                val showcaseState = remember { com.example.presentation.components.ShowcaseState() }
-                androidx.compose.runtime.CompositionLocalProvider(
-                    com.example.presentation.components.LocalShowcaseState provides showcaseState
-                ) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        LaborbookApp(
-                            viewModel = viewModel
-                        )
-                        com.example.presentation.components.ShowcaseOverlay()
-                    }
-                }
+                LaborbookApp(
+                    viewModel = viewModel
+                )
             }
         }
     }

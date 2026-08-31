@@ -31,7 +31,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.example.presentation.components.showcaseTarget
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -72,23 +71,7 @@ fun LaborHomeScreen(
     val workers by viewModel.filteredWorkers.collectAsStateWithLifecycle()
     val syncMessage by viewModel.syncMessage.collectAsStateWithLifecycle()
     val userProfile by viewModel.userProfile.collectAsStateWithLifecycle()
-    val showcaseState = com.example.presentation.components.LocalShowcaseState.current
-    androidx.compose.runtime.LaunchedEffect(Unit) {
-        val prefs = context.getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
-        if (!prefs.getBoolean("has_seen_home_tour_v2", false)) {
-            kotlinx.coroutines.delay(500)
-            showcaseState.startTour(
-                listOf(
-                    com.example.presentation.components.ShowcaseStep(
-                        targetId = if (workers.isEmpty()) "add_btn" else "add_fab",
-                        title = "Add Worker",
-                        description = "Yahan click karke apna pehla worker add karein."
-                    )
-                )
-            )
-            prefs.edit().putBoolean("has_seen_home_tour_v2", true).apply()
-        }
-    }
+
     val lastBackupStatus by viewModel.lastBackupStatus.collectAsStateWithLifecycle()
     val isCloudSyncing by viewModel.isCloudSyncing.collectAsStateWithLifecycle()
     val workerSearchQuery by viewModel.workerSearchQuery.collectAsStateWithLifecycle()
@@ -166,7 +149,7 @@ fun LaborHomeScreen(
                 shape = RoundedCornerShape(30.dp),
                 elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp),
                 modifier = Modifier
-                    .showcaseTarget("add_fab")
+                    
                     .padding(bottom = 8.dp)
                     .testTag("fab_add_labor")
             )
@@ -342,7 +325,7 @@ fun EmptyLaborStateCard(
                     onClick = onAddLaborClick,
                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = LaborBlue),
                     shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.testTag("empty_state_add_labor_btn").showcaseTarget("add_btn")
+                    modifier = Modifier.testTag("empty_state_add_labor_btn")
                 ) {
                     Icon(
                         imageVector = Icons.Default.PersonAdd,

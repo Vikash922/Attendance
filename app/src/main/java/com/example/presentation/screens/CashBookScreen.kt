@@ -39,7 +39,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import com.example.presentation.components.showcaseTarget
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -265,7 +264,7 @@ fun CashBookScreen(
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(48.dp)
-                                    .testTag("btn_cash_in").showcaseTarget("cash_in_btn"),
+                                    .testTag("btn_cash_in"),
                                 shape = RoundedCornerShape(24.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00875A))
                             ) {
@@ -283,7 +282,7 @@ fun CashBookScreen(
                                 modifier = Modifier
                                     .weight(1f)
                                     .height(48.dp)
-                                    .testTag("btn_cash_out").showcaseTarget("cash_out_btn"),
+                                    .testTag("btn_cash_out"),
                                 shape = RoundedCornerShape(24.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE53935))
                             ) {
@@ -335,7 +334,7 @@ fun CashBookScreen(
                 // Summary Card
                 Card(
                         modifier = Modifier
-                            .showcaseTarget("cash_summary")
+                            
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp),
                         shape = RoundedCornerShape(8.dp),
@@ -417,7 +416,7 @@ fun CashBookScreen(
                             // 'View Report' light blue pill button
                             Box(
                                 modifier = Modifier
-                                    .showcaseTarget("view_report_btn")
+                                    
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(Color(0xFFEFF6FF))
