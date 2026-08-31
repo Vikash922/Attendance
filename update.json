@@ -1,6 +1,6 @@
 {
-    "versionCode": 5,
-    "versionName": "1.4",
+    "versionCode": 6,
+    "versionName": "1.5",
     "apkUrl": "https://github.com/Vikash922/Attendance/releases/latest/download/app-release.apk",
     "releaseNotes": "Fix contact list crash, improve UI layouts and table column spacing."
 }

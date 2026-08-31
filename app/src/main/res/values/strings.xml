@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Laborbook</string>
+    <string name="google_app_id" translatable="false">1:1027179208222:android:ac3483799fc5ed6c6a580f</string>
+    <string name="google_api_key" translatable="false">AIzaSyAMeOVp4gfkmBrOv_uMfOUuokXHQLFwFZY</string>
+    <string name="project_id" translatable="false">laborbook-4c47e</string>
+    <string name="gcm_defaultSenderId" translatable="false">1027179208222</string>
+    <string name="google_storage_bucket" translatable="false">laborbook-4c47e.firebasestorage.app</string>
 </resources>
