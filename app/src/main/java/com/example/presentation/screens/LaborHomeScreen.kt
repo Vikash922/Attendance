@@ -75,7 +75,7 @@ fun LaborHomeScreen(
     val showcaseState = com.example.presentation.components.LocalShowcaseState.current
     androidx.compose.runtime.LaunchedEffect(Unit) {
         val prefs = context.getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE)
-        if (!prefs.getBoolean("has_seen_home_tour", false)) {
+        if (!prefs.getBoolean("has_seen_home_tour_v2", false)) {
             kotlinx.coroutines.delay(500)
             showcaseState.startTour(
                 listOf(
@@ -86,7 +86,7 @@ fun LaborHomeScreen(
                     )
                 )
             )
-            prefs.edit().putBoolean("has_seen_home_tour", true).apply()
+            prefs.edit().putBoolean("has_seen_home_tour_v2", true).apply()
         }
     }
     val lastBackupStatus by viewModel.lastBackupStatus.collectAsStateWithLifecycle()
