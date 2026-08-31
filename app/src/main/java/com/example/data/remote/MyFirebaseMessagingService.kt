@@ -25,7 +25,18 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        // Here you can send the token to your backend or save it in Firestore if needed for targeted messages
+        // Save token to Firestore so you can target specific users if needed in the future
+        saveTokenToFirestore(token)
+    }
+
+    private fun saveTokenToFirestore(token: String) {
+        val user = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        if (user != null) {
+            val db = com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            val docRef = db.collection("users_v2").document(user.uid)
+            val data = hashMapOf("fcmToken" to token, "lastTokenUpdate" to System.currentTimeMillis())
+            docRef.set(data, com.google.firebase.firestore.SetOptions.merge())
+        }
     }
 
     private fun showNotification(title: String, message: String) {
