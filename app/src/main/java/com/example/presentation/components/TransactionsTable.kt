@@ -58,7 +58,8 @@ fun parseTxDate(dateStr: String?): ParsedTransactionDate {
 @Composable
 fun TransactionsTable(
     transactions: List<CashTransaction>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onTransactionClick: (CashTransaction) -> Unit = {}
 ) {
     val borderColor = Color(0xFFE5E7EB)
 
@@ -166,6 +167,7 @@ fun TransactionsTable(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clickable { onTransactionClick(tx) }
                             .height(IntrinsicSize.Min),
                         verticalAlignment = Alignment.CenterVertically
                     ) {

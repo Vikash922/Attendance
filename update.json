@@ -1,6 +1,6 @@
 {
-    "versionCode": 11,
-    "versionName": "1.10",
+    "versionCode": 12,
+    "versionName": "1.11",
     "apkUrl": "https://github.com/Vikash922/Attendance/releases/latest/download/app-release.apk",
-    "releaseNotes": "Fix contact list crash, improve UI layouts and table column spacing."
+    "releaseNotes": "Fix: Cashbook transactions can now be clicked to view and edit details."
 }

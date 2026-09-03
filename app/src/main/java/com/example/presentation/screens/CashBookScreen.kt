@@ -447,7 +447,8 @@ fun CashBookScreen(
                 // Transaction List / Empty State
                 com.example.presentation.components.TransactionsTable(
                     transactions = displayTransactions,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    onTransactionClick = { tx -> viewModel.openTransactionDetail(tx) }
                 )
         }
         }
